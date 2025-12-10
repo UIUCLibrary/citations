@@ -16,7 +16,9 @@ Go to the plugin settings and fill in the required fields:
 ---
 ### IMPORTANT NOTE
 
-***You must [contact Crossref](https://www.crossref.org/contact) to ask for the Cited-by service to be enabled for your prefix(es), if you want to use Crossref within this Plugin!***
+***You must [contact Crossref](https://www.crossref.org/contact) to ask for the Cited-by service to be enabled for your prefix(es), if you want to use Crossref within this plugin!***
+
+***You must also [contact Scopus](https://dev.elsevier.com/sc_apis.html) to ask for an API key, if you want to use Scopus within this plugin!***
 
 ---
 
