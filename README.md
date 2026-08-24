@@ -4,8 +4,10 @@
 ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/RBoelter/citations?include_prereleases&label=latest%20release)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/RBoelter/citations)
 ![GitHub](https://img.shields.io/github/license/RBoelter/citations)
-[![OJS-Version](https://img.shields.io/badge/pkp--ojs-3.3.x-brightgreen)](https://github.com/pkp/ojs/tree/master)
+[![OJS-Version](https://img.shields.io/badge/pkp--ojs-3.5.x-brightgreen)](https://github.com/pkp/ojs/tree/main)
 ![GitHub All Releases](https://img.shields.io/github/downloads/RBoelter/citations/total)
+
+> **Compatibility:** OJS/OPS 3.5.x (requires PHP 8.2+)
 
 ## Installation
 Install the plugin via plugin gallery
