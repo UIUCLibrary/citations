@@ -83,7 +83,7 @@ class CitationsPlugin extends GenericPlugin
     {
         $page = $params[0];
         if ($this->getEnabled() && $page === 'citations') {
-            define('HANDLER_CLASS', CitationsHandler::class);
+            $params[3] = new CitationsHandler();
             return true;
         }
         return false;
@@ -95,7 +95,6 @@ class CitationsPlugin extends GenericPlugin
     public function getActions($request, $actionArgs): array
     {
         $router = $request->getRouter();
-        import('lib.pkp.classes.linkAction.request.AjaxModal');
         return array_merge(
             $this->getEnabled() ? array(
                 new LinkAction(
