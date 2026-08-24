@@ -85,7 +85,7 @@ class CitationsPlugin extends GenericPlugin
     {
         $page = $params[0];
         if ($this->getEnabled() && $page === 'citations') {
-            define('HANDLER_CLASS', CitationsHandler::class);
+            $params[3] = new CitationsHandler();
             return true;
         }
         return false;
@@ -97,28 +97,8 @@ class CitationsPlugin extends GenericPlugin
     public function getActions($request, $actionArgs): array
     {
         $router = $request->getRouter();
-        import('lib.pkp.classes.linkAction.request.AjaxModal');
-        $actions = [];
+        $exportActions = [];
         if ($this->getEnabled()) {
-            $actions[] = new LinkAction(
-                'settings',
-                new AjaxModal(
-                    $router->url(
-                        $request,
-                        null,
-                        null,
-                        'manage',
-                        null,
-                        array('verb' => 'settings', 'plugin' => $this->getName(),
-                            'category' => 'generic'
-                        )
-                    ),
-                    $this->getDisplayName()
-                ),
-                __('manager.plugins.settings'),
-                null
-            );
-
             $context = $request->getContext();
             $user = $request->getUser();
 
@@ -128,7 +108,7 @@ class CitationsPlugin extends GenericPlugin
                 $isSiteAdmin = $user->hasRole([Role::ROLE_ID_SITE_ADMIN], \PKP\core\PKPApplication::SITE_CONTEXT_ID);
 
                 if ($isManager || $isSiteAdmin) {
-                    $actions[] = new LinkAction(
+                    $exportActions[] = new LinkAction(
                         'exportCitations',
                         new RedirectAction(
                             $router->url($request, null, 'citations', 'export')
@@ -139,7 +119,7 @@ class CitationsPlugin extends GenericPlugin
                 }
 
                 if ($isSiteAdmin) {
-                    $actions[] = new LinkAction(
+                    $exportActions[] = new LinkAction(
                         'exportAllCitations',
                         new RedirectAction(
                             $router->url($request, null, 'citations', 'export', null, ['scope' => 'all'])
@@ -150,7 +130,30 @@ class CitationsPlugin extends GenericPlugin
                 }
             }
         }
-        return array_merge($actions, parent::getActions($request, $actionArgs));
+        return array_merge(
+            $this->getEnabled() ? array(
+                new LinkAction(
+                    'settings',
+                    new AjaxModal(
+                        $router->url(
+                            $request,
+                            null,
+                            null,
+                            'manage',
+                            null,
+                            array('verb' => 'settings', 'plugin' => $this->getName(),
+                                'category' => 'generic'
+                            )
+                        ),
+                        $this->getDisplayName()
+                    ),
+                    __('manager.plugins.settings'),
+                    null
+                ),
+            ) : array(),
+            $exportActions,
+            parent::getActions($request, $actionArgs)
+        );
     }
 
 
