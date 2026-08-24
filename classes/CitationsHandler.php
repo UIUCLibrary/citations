@@ -4,6 +4,7 @@ namespace APP\plugins\generic\citations\classes;
 
 use APP\facades\Repo;
 use APP\handler\Handler;
+use PKP\db\DAORegistry;
 
 use APP\plugins\generic\citations\classes\processor\CrossrefProcessor;
 use APP\plugins\generic\citations\classes\processor\EuropePmcProcessor;
@@ -243,9 +244,12 @@ class CitationsHandler extends Handler
      */
     private function getAllContextMap(): array
     {
+        /** @var \APP\journal\JournalDAO $journalDao */
+        $journalDao = DAORegistry::getDAO('JournalDAO');
         $map = [];
-        foreach (Repo::journal()->getCollector()->filterByEnabled(true)->getMany() as $ctx) {
-            $map[$ctx->getId()] = $ctx->getLocalizedName() ?: $ctx->getPath();
+        $journalIterator = $journalDao->getAll(true);
+        while ($journal = $journalIterator->next()) {
+            $map[$journal->getId()] = $journal->getLocalizedName() ?: $journal->getPath();
         }
         return $map;
     }
