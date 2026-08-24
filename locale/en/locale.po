@@ -100,3 +100,15 @@ msgstr "The link to the Europe PMC search can be de-/activated with this option.
 
 msgid "plugins.generic.citations.show.pmc.check"
 msgstr "Enable Europe PMC"
+
+msgid "plugins.generic.citations.export"
+msgstr "Export Citations (CSV)"
+
+msgid "plugins.generic.citations.export.all"
+msgstr "Export All Journals (CSV)"
+
+msgid "plugins.generic.citations.export.description"
+msgstr "Download a CSV report of all citation data for published articles in this journal."
+
+msgid "plugins.generic.citations.export.all.description"
+msgstr "Download a CSV report of all citation data for published articles across all journals in this installation. Only available to site administrators."

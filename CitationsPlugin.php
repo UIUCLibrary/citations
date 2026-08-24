@@ -10,8 +10,10 @@ use Exception;
 use PKP\core\JSONMessage;
 use PKP\linkAction\LinkAction;
 use PKP\linkAction\request\AjaxModal;
+use PKP\linkAction\request\RedirectAction;
 use PKP\plugins\GenericPlugin;
 use PKP\plugins\Hook;
+use PKP\security\Role;
 
 
 class CitationsPlugin extends GenericPlugin
@@ -95,6 +97,40 @@ class CitationsPlugin extends GenericPlugin
     public function getActions($request, $actionArgs): array
     {
         $router = $request->getRouter();
+        $exportActions = [];
+        if ($this->getEnabled()) {
+            $context = $request->getContext();
+            $user = $request->getUser();
+
+            if ($context && $user) {
+                $contextId = $context->getId();
+                $isManager = $user->hasRole([Role::ROLE_ID_MANAGER], $contextId);
+                $isSiteAdmin = $user->hasRole([Role::ROLE_ID_SITE_ADMIN], \PKP\core\PKPApplication::SITE_CONTEXT_ID);
+
+                $dispatcher = $request->getDispatcher();
+                if ($isManager || $isSiteAdmin) {
+                    $exportActions[] = new LinkAction(
+                        'exportCitations',
+                        new RedirectAction(
+                            $dispatcher->url($request, Application::ROUTE_PAGE, null, 'citations', 'export')
+                        ),
+                        __('plugins.generic.citations.export'),
+                        null
+                    );
+                }
+
+                if ($isSiteAdmin) {
+                    $exportActions[] = new LinkAction(
+                        'exportAllCitations',
+                        new RedirectAction(
+                            $dispatcher->url($request, Application::ROUTE_PAGE, null, 'citations', 'export', null, ['scope' => 'all'])
+                        ),
+                        __('plugins.generic.citations.export.all'),
+                        null
+                    );
+                }
+            }
+        }
         return array_merge(
             $this->getEnabled() ? array(
                 new LinkAction(
@@ -116,6 +152,7 @@ class CitationsPlugin extends GenericPlugin
                     null
                 ),
             ) : array(),
+            $exportActions,
             parent::getActions($request, $actionArgs)
         );
     }
