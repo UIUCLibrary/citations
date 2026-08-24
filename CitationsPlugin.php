@@ -107,11 +107,12 @@ class CitationsPlugin extends GenericPlugin
                 $isManager = $user->hasRole([Role::ROLE_ID_MANAGER], $contextId);
                 $isSiteAdmin = $user->hasRole([Role::ROLE_ID_SITE_ADMIN], \PKP\core\PKPApplication::SITE_CONTEXT_ID);
 
+                $dispatcher = $request->getDispatcher();
                 if ($isManager || $isSiteAdmin) {
                     $exportActions[] = new LinkAction(
                         'exportCitations',
                         new RedirectAction(
-                            $router->url($request, null, 'citations', 'export')
+                            $dispatcher->url($request, Application::ROUTE_PAGE, null, 'citations', 'export')
                         ),
                         __('plugins.generic.citations.export'),
                         null
@@ -122,7 +123,7 @@ class CitationsPlugin extends GenericPlugin
                     $exportActions[] = new LinkAction(
                         'exportAllCitations',
                         new RedirectAction(
-                            $router->url($request, null, 'citations', 'export', null, ['scope' => 'all'])
+                            $dispatcher->url($request, Application::ROUTE_PAGE, null, 'citations', 'export', null, ['scope' => 'all'])
                         ),
                         __('plugins.generic.citations.export.all'),
                         null

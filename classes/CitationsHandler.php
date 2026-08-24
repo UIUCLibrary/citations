@@ -2,7 +2,6 @@
 
 namespace APP\plugins\generic\citations\classes;
 
-use APP\core\Application;
 use APP\facades\Repo;
 use APP\handler\Handler;
 
@@ -244,9 +243,8 @@ class CitationsHandler extends Handler
      */
     private function getAllContextMap(): array
     {
-        $contextService = Application::get()->getContextService();
         $map = [];
-        foreach ($contextService->getMany(['isEnabled' => true]) as $ctx) {
+        foreach (Repo::journal()->getCollector()->filterByEnabled(true)->getMany() as $ctx) {
             $map[$ctx->getId()] = $ctx->getLocalizedName() ?: $ctx->getPath();
         }
         return $map;
