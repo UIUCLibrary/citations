@@ -10,8 +10,10 @@ use Exception;
 use PKP\core\JSONMessage;
 use PKP\linkAction\LinkAction;
 use PKP\linkAction\request\AjaxModal;
+use PKP\linkAction\request\RedirectAction;
 use PKP\plugins\GenericPlugin;
 use PKP\plugins\Hook;
+use PKP\security\Role;
 
 
 class CitationsPlugin extends GenericPlugin
@@ -96,29 +98,59 @@ class CitationsPlugin extends GenericPlugin
     {
         $router = $request->getRouter();
         import('lib.pkp.classes.linkAction.request.AjaxModal');
-        return array_merge(
-            $this->getEnabled() ? array(
-                new LinkAction(
-                    'settings',
-                    new AjaxModal(
-                        $router->url(
-                            $request,
-                            null,
-                            null,
-                            'manage',
-                            null,
-                            array('verb' => 'settings', 'plugin' => $this->getName(),
-                                'category' => 'generic'
-                            )
-                        ),
-                        $this->getDisplayName()
+        $actions = [];
+        if ($this->getEnabled()) {
+            $actions[] = new LinkAction(
+                'settings',
+                new AjaxModal(
+                    $router->url(
+                        $request,
+                        null,
+                        null,
+                        'manage',
+                        null,
+                        array('verb' => 'settings', 'plugin' => $this->getName(),
+                            'category' => 'generic'
+                        )
                     ),
-                    __('manager.plugins.settings'),
-                    null
+                    $this->getDisplayName()
                 ),
-            ) : array(),
-            parent::getActions($request, $actionArgs)
-        );
+                __('manager.plugins.settings'),
+                null
+            );
+
+            $context = $request->getContext();
+            $user = $request->getUser();
+
+            if ($context && $user) {
+                $contextId = $context->getId();
+                $isManager = $user->hasRole([Role::ROLE_ID_MANAGER], $contextId);
+                $isSiteAdmin = $user->hasRole([Role::ROLE_ID_SITE_ADMIN], \PKP\core\PKPApplication::SITE_CONTEXT_ID);
+
+                if ($isManager || $isSiteAdmin) {
+                    $actions[] = new LinkAction(
+                        'exportCitations',
+                        new RedirectAction(
+                            $router->url($request, null, 'citations', 'export')
+                        ),
+                        __('plugins.generic.citations.export'),
+                        null
+                    );
+                }
+
+                if ($isSiteAdmin) {
+                    $actions[] = new LinkAction(
+                        'exportAllCitations',
+                        new RedirectAction(
+                            $router->url($request, null, 'citations', 'export', null, ['scope' => 'all'])
+                        ),
+                        __('plugins.generic.citations.export.all'),
+                        null
+                    );
+                }
+            }
+        }
+        return array_merge($actions, parent::getActions($request, $actionArgs));
     }
 
 
